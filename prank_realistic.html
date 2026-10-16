@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Human Verification</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0e13;--panel:#151a22;--line:#303947;--muted:#9ca8b8;--green:#68f0a1;--red:#ff465d}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -20%,#263347 0,transparent 55%),#0b0e13;color:#eef3f8;font:15px/1.5 "Segoe UI",Arial,sans-serif;display:grid;place-items:center;padding:24px}
+.wrap{width:min(100%,470px)}
+.brand{display:flex;align-items:center;gap:10px;margin:0 0 20px;color:#dfe7f0;font-size:14px;font-weight:700;letter-spacing:.04em}
+.brand-icon{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:#253447;color:#b9d9ff;font-size:18px}
+.panel{background:linear-gradient(145deg,#171d27,#11161e);border:1px solid var(--line);border-radius:15px;padding:28px;box-shadow:0 24px 70px #0008}
+h1{font-size:25px;letter-spacing:-.03em;margin:0 0 8px}
+.sub{color:var(--muted);margin:0 0 23px}
+.captcha{display:flex;align-items:center;gap:13px;padding:16px;border:1px solid #3c4655;border-radius:8px;background:#0e131a;margin:0 0 15px}
+.captcha input{width:22px;height:22px;accent-color:#58d993}
+.captcha label{font-size:15px;font-weight:600;flex:1;cursor:pointer}
+.captcha-badge{font-size:11px;color:#aab8c9;text-align:center}
+.captcha-badge strong{display:block;font-size:18px;color:#b8c9df}
+button{border:0;border-radius:8px;padding:12px 16px;font:600 14px "Segoe UI",Arial,sans-serif;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid #b7d7ff;outline-offset:3px}
+.actions{display:flex;gap:10px}.primary{background:#dce8f7;color:#152235;flex:1}.secondary{background:#293341;color:#f3f6fa}
+.status{min-height:22px;margin-top:12px;color:#ffd078;font-size:13px}
+.fine{font-size:11px;color:#778598;margin:18px 0 0}
+#demo{display:none;width:min(100%,760px)}
+.topline{display:flex;justify-content:space-between;gap:12px;align-items:center;color:#9eabbc;font:12px ui-monospace,Consolas,monospace;margin-bottom:12px}
+.dot{display:inline-block;width:8px;height:8px;background:#ffb347;border-radius:50%;margin-right:7px}
+.terminal{border:1px solid #303b49;border-radius:12px;overflow:hidden;background:#080c11;box-shadow:0 24px 80px #0008}
+.termhead{display:flex;align-items:center;gap:7px;padding:12px 15px;background:#171d26;border-bottom:1px solid #303b49;color:#aab6c5;font:12px ui-monospace,Consolas,monospace}
+.traffic{width:8px;height:8px;border-radius:50%;background:#596575}.termcontent{padding:23px;font:13px/1.9 ui-monospace,SFMono-Regular,Consolas,monospace;color:#a9f4c5;min-height:240px}
+.term-title{color:#dce8f7;margin-bottom:14px}.log{min-height:118px;white-space:pre-wrap;overflow-wrap:anywhere}.cursor{display:inline-block;width:8px;height:15px;background:#a9f4c5;vertical-align:middle;animation:blink .8s steps(2,end) infinite}
+.track{height:7px;background:#202a35;border-radius:9px;overflow:hidden;margin-top:14px}.bar{height:100%;width:0;background:linear-gradient(90deg,#53c98c,#d9f5a3);transition:width .25s}
+.progress-text{display:flex;justify-content:space-between;color:#8493a5;font-size:11px;margin-top:6px}
+#reveal{display:none;text-align:center;margin:25px 0 0;padding:22px;border:1px solid #62313b;background:#210f15;border-radius:12px}
+#reveal h2{font-size:clamp(28px,6vw,48px);color:#ff596c;letter-spacing:.04em;margin:0 0 8px}
+#reveal p{color:#e5bac0;margin:5px 0}
+.prankline{color:#fff!important;font-size:clamp(23px,4vw,34px);font-weight:900}
+.foot{color:#8996a7;text-align:center;font-size:12px;margin:15px 0}
+#reset{margin-top:18px}
+.glitch{animation:glitch .13s steps(2,end) 5}
+@keyframes blink{50%{opacity:0}}@keyframes glitch{0%{transform:translate(2px,-1px);filter:hue-rotate(30deg)}50%{transform:translate(-2px,1px);filter:hue-rotate(-30deg)}100%{transform:none;filter:none}}
+@media(max-width:480px){.panel{padding:21px}.termcontent{padding:16px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main class="wrap" id="verify">
+  <div class="brand"><div class="brand-icon">✓</div><span>SECURE ACCESS CHECK</span></div>
+  <section class="panel">
+    <h1>Verify you are human</h1>
+    <p class="sub">Complete the check below to continue.</p>
+    <div class="captcha">
+      <input id="human" type="checkbox">
+      <label for="human">I am not a robot</label>
+      <div class="captcha-badge"><strong>◉</strong> verify<br>demo</div>
+    </div>
+    <div class="actions"><button class="primary" id="ok">OK · Continue</button><button class="secondary" id="no">NO</button></div>
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+    <p class="fine">Interactive prank demo. This page does not verify identity or collect information.</p>
+  </section>
+</main>
+<main id="demo">
+  <div class="topline"><span><i class="dot"></i>SECURITY CONSOLE / DEMO</span><span>LOCAL SIMULATION</span></div>
+  <section class="terminal" id="terminal">
+    <div class="termhead"><i class="traffic"></i><i class="traffic"></i><i class="traffic"></i><span style="margin-left:8px">diagnostics — simulated session</span></div>
+    <div class="termcontent">
+      <div class="term-title">SYSTEM DIAGNOSTICS <span style="color:#8291a3">v.2.4-demo</span></div>
+      <div class="log" id="log">> Starting demo sequence...</div><span class="cursor" id="cursor"></span>
+      <div class="track"><div class="bar" id="bar"></div></div>
+      <div class="progress-text"><span id="phase">INITIALIZING DEMO</span><span id="pct">0%</span></div>
+    </div>
+  </section>
+</main>
+<script>
+(() => {
+ const verify=document.getElementById('verify'),demo=document.getElementById('demo'),human=document.getElementById('human'),status=document.getElementById('status');
+ const log=document.getElementById('log'),bar=document.getElementById('bar'),pct=document.getElementById('pct'),phase=document.getElementById('phase'),terminal=document.getElementById('terminal'),cursor=document.getElementById('cursor');
+ let timers=[],run=0;
+ const later=(fn,ms)=>timers.push(setTimeout(fn,ms));
+ function clear(){timers.forEach(clearTimeout);timers=[]}
+ document.getElementById('no').onclick=()=>{status.textContent='Check not completed. Tick the box and press OK to view the demo.'};
+ document.getElementById('ok').onclick=()=>{
+  if(!human.checked){status.textContent='Please tick “I am not a robot” first.';return}
+  clear();const id=++run;verify.style.display='none';demo.style.display='block';terminal.classList.remove('glitch');
+  log.textContent='> Starting demo sequence...';bar.style.width='0%';pct.textContent='0%';phase.textContent='INITIALIZING DEMO';cursor.style.display='inline-block';
+  const stages=[
+   [450,'> Initializing visual demo...','INITIALIZING DEMO',12],
+   [1000,'> Checking fictional session token...','CHECKING DEMO DATA',31],
+   [1650,'> Running imaginary diagnostics...','RUNNING SIMULATION',54],
+   [2300,'> Please wait...','WAITING',77]
+  ];
+  stages.forEach(([ms,msg,label,n])=>later(()=>{if(id!==run)return;log.textContent=msg;bar.style.width=n+'%';pct.textContent=n+'%';phase.textContent=label},ms));
+  // Each delay is the time spent at that percentage before moving to the next.
+  let elapsed=2300;
+  const waitAt=(n,ms,label='WAITING')=>{
+   elapsed+=ms;
+   later(()=>{if(id!==run)return;bar.style.width=n+'%';pct.textContent=n+'%';phase.textContent=label;log.textContent='> Please wait...'},elapsed);
+  };
+  waitAt(83,10000); // 77% stays for 10 seconds
+  waitAt(91,20000); // 83% stays for 20 seconds
+  waitAt(92,2000);  // 91% stays for 2 seconds
+  waitAt(93,2000);  // 92% stays for 2 seconds
+  for(let n=94;n<=97;n++) waitAt(n,2000); // 93% through 97%: 2 seconds each
+  waitAt(98,21000); // 98% stays for 21 seconds
+  waitAt(99,40000); // 99% stays for 40 seconds
+  // Then remain at 99% indefinitely; no reveal or extra message appears.
+
+ };
+ // Esc is not blocked; the page does not enter fullscreen or capture browser shortcuts.
+})();
+</script>
+</body>
+</html>
